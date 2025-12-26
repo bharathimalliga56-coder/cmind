@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Practice Dashboard</title>
+
+<style>
+* {
+  box-sizing: border-box;
+  font-family: Arial, sans-serif;
+}
+body {
+  background: #f4f6f8;
+  padding: 20px;
+}
+
+h2 {
+  margin-bottom: 15px;
+
+}
+
+/* ===== FILTER BAR ===== */
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+.filters input, .filters button {
+  padding: 8px;
+}
+
+/* ===== TABLE ===== */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+}
+th, td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
+}
+th {
+  background: #f0f0f0;
+}
+.action-btn {
+  cursor: pointer;
+  color: blue;
+  margin-right: 10px;
+}
+
+/* ===== MODAL ===== */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  background: rgba(0,0,0,0.5);
+  display: none;
+  align-items: center;
+  justify-content: center;
+}
+.modal-box {
+  background: white;
+  padding: 20px;
+  width: 90%;
+  max-width: 400px;
+  border-radius: 4px;
+}
+.modal-box input {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 10px;
+}
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+/* ===== RESPONSIVE ===== */
+@media(max-width: 768px) {
+  table {
+    font-size: 12px;
+  }
+}
+/* ===== HEADER ===== */
+.header {
+  background: white;
+  padding: 12px 20px;
+  margin-bottom: 20px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+}
+
+.logo-box {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.logo-icon {
+  width: 32px;
+  height: 32px;
+  background: #2563eb;
+  border-radius: 4px;
+}
+
+.logo-text {
+  font-size: 18px;
+  font-weight: bold;
+}
+/* ===== HEADER ===== */
+.header {
+  background: white;
+  padding: 0px 20px;
+  margin-bottom: 20px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+}
+
+.logo-box {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.logo-icon {
+  width: 32px;
+  height: 32px;
+  
+  border-radius: 4px;
+}
+
+.logo-text {
+  font-size: 18px;
+  font-weight: bold;
+}
+.error {
+  color: red;
+  font-size: 12px;
+  margin-bottom: 8px;
+}
+select {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 6px;
+}
+
+</style>
+</head>
+
+<body>
+
+
+<header class="header">
+  <div class="logo-box">
+    <div class="logo-icon"><img class="logo-icon" src="C:\Users\ADMIN\Desktop\Capminds\clogo.jpg"></div>
+    <span class="logo-text"><h2>CAPMINDS</h2></span>
+  </div>
+</header>
+
+<h2>Appointment Details(Practice Dashboard)</h2>
+<div id="successMsg" style="
+  display:none;
+  background:#e6fffa;
+  color:#065f46;
+  padding:10px;
+  border:1px solid #34d399;
+  border-radius:4px;
+  margin-bottom:15px;
+">
+  ✅ Appointment booked successfully
+</div>
+
+<!-- ===== FILTERS ===== -->
+<div class="filters">
+  <input type="text" id="searchPatient" placeholder="Search Patient">
+  <input type="text" id="searchDoctor" placeholder="Search Doctor">
+  <input type="date" id="fromDate">
+  <input type="date" id="toDate">
+<div class="error" id="errorMsg"></div>
+  <button onclick="applyFilters()">Search</button>
+  <button onclick="openModal()">+ Add Appointment</button>
+
+<button onclick="goToCalendar()">📅 Calendar</button></div>
+
+
+<!-- ===== TABLE ===== -->
+<table>
+<thead>
+<tr>
+  <th>Patient</th>
+  <th>Doctor</th>
+  <th>Hospital</th>
+  <th>Specialty</th>
+  <th>Date</th>
+  <th>Time</th>
+  <th>Action</th>
+</tr>
+</thead>
+<tbody id="tableBody"></tbody>
+</table>
+
+<!-- ===== MODAL ===== -->
+<div class="modal" id="modal">
+  <div class="modal-box">
+    <h3 id="modalTitle">Add Appointment</h3>
+
+    <input type="text" id="patient" placeholder="Patient Name">
+<div class="error" id="patientError"></div>
+    <select id="doctor">
+  <option value="">Select Doctor</option>
+  <option>Dr. Smith</option>
+  <option>Dr. Anitha</option>
+  <option>Dr. Kumar</option>
+</select>
+<div class="error" id="doctorError"></div>
+
+    <select id="hospital">
+  <option value="">Select Hospital</option>
+  <option>City Hospital</option>
+  <option>Global Health Care</option>
+  <option>CAPMINDS Medical Center</option>
+</select>
+<div class="error" id="hospitalError"></div>
+    <select id="specialty">
+  <option value="">Select Specialty</option>
+  <option>Cardiology</option>
+  <option>Dermatology</option>
+  <option>Orthopedics</option>
+  <option>General Medicine</option>
+</select>
+<div class="error" id="specialtyError"></div>
+
+    <input type="date" id="date">
+<div class="error" id="dateError"></div>
+    <input type="time" id="time">
+
+    <div class="modal-actions">
+      <button onclick="closeModal()">Cancel</button>
+      <button onclick="saveAppointment()">Save</button>
+    </div>
+  </div>
+</div>
+
+<script>
+
+
+function showSuccessMessage(message) {
+  const msg = document.getElementById("successMsg");
+  msg.innerText = message;
+  msg.style.display = "block";
+
+  setTimeout(() => {
+    msg.style.display = "none";
+  }, 3000);
+}
+
+let appointments = JSON.parse(localStorage.getItem("appointments")) || [];
+let editIndex = null;
+<!--prevent past date selection in UI-->
+document.getElementById("date").min =
+  new Date().toISOString().split("T")[0];
+<!--check past date-->
+function isPastDate(selectedDate) {
+  const today = new Date();
+  today.setHours(0,0,0,0);
+
+  const inputDate = new Date(selectedDate);
+  inputDate.setHours(0,0,0,0);
+
+  return inputDate < today;
+}
+function goToCalendar() {
+  window.location.href="index3.html";
+}
+/* ===== RENDER TABLE ===== */
+function renderTable(data = appointments) {
+  const tbody = document.getElementById("tableBody");
+  tbody.innerHTML = "";
+
+  data.forEach((a, i) => {
+    tbody.innerHTML += `
+      <tr>
+        <td>${a.patient}</td>
+        <td>${a.doctor}</td>
+        <td>${a.hospital}</td>
+        <td>${a.specialty}</td>
+        <td>${a.date}</td>
+        <td>${a.time}</td>
+        <td>
+          <span class="action-btn" onclick="editAppointment(${i})">Edit</span>
+          <span class="action-btn" onclick="deleteAppointment(${i})">Delete</span>
+        </td>
+      </tr>
+    `;
+  });
+}
+
+/* ===== FILTER ===== */
+function applyFilters() {
+  let patient = document.getElementById("searchPatient").value.toLowerCase();
+  let doctor = document.getElementById("searchDoctor").value.toLowerCase();
+  let from = document.getElementById("fromDate").value;
+  let to = document.getElementById("toDate").value;
+
+  let filtered = appointments.filter(a => {
+    let matchPatient = a.patient.toLowerCase().includes(patient);
+    let matchDoctor = a.doctor.toLowerCase().includes(doctor);
+    let matchDate = true;
+
+    if (from && a.date < from) matchDate = false;
+    if (to && a.date > to) matchDate = false;
+
+    return matchPatient && matchDoctor && matchDate;
+  });
+
+  renderTable(filtered);
+}
+
+/* ===== MODAL ===== */
+function openModal() {
+  editIndex = null;
+  document.getElementById("modalTitle").innerText = "Add Appointment";
+  document.getElementById("modal").style.display = "flex";
+  clearForm();
+}
+function closeModal() {
+  document.getElementById("modal").style.display = "none";
+}
+
+/* ===== SAVE ===== */
+/*function saveAppointment() {
+  let appointment = {
+    patient: patient.value,
+    doctor: doctor.value,
+    hospital: hospital.value,
+    specialty: specialty.value,
+    date: date.value,
+    time: time.value
+  };
+
+  if (!appointment.patient || !appointment.doctor || !appointment.date || !appointment.time) {
+    alert("Please fill mandatory fields");
+    return;
+  }
+ if (isPastDate(date)) {
+    error.innerText = "Yesterday date is not applicable to make appointment";
+    return;
+  }
+
+  if (editIndex === null) {
+    appointments.push(appointment);
+  } else {
+    appointments[editIndex] = appointment;
+  }
+
+  localStorage.setItem("appointments", JSON.stringify(appointments));
+  closeModal();
+  renderTable();
+}
+*/
+function saveAppointment() {
+  const patientName = patient.value.trim();
+
+  // Clear errors
+  patientError.innerText = "";
+  doctorError.innerText = "";
+  hospitalError.innerText = "";
+  specialtyError.innerText = "";
+  dateError.innerText = "";
+
+  // ✅ Patient validation
+  if (patientName === "") {
+    patientError.innerText = "Patient name is required";
+    patient.focus();
+    return;
+  }
+  if (patientName.length < 3) {
+    patientError.innerText = "Minimum 3 characters required";
+    return;
+  }
+  if (!/^[A-Za-z\s]+$/.test(patientName)) {
+    patientError.innerText = "Only letters and spaces allowed";
+    return;
+  }
+
+  // ✅ Dropdown validations
+  if (!doctor.value) {
+    doctorError.innerText = "Please select a doctor";
+    return;
+  }
+
+  if (!hospital.value) {
+    hospitalError.innerText = "Please select a hospital";
+    return;
+  }
+
+  if (!specialty.value) {
+    specialtyError.innerText = "Please select a specialty";
+    return;
+  }
+
+  // ✅ Date validation
+  if (!date.value) {
+    dateError.innerText = "Please select appointment date";
+    return;
+  }
+
+  if (isPastDate(date.value)) {
+    dateError.innerText = "Past dates are not allowed";
+    return;
+  }
+
+  if (!time.value) {
+    alert("Appointment time is required");
+    return;
+  }
+
+  const appointment = {
+    patient: patientName,
+    doctor: doctor.value,
+    hospital: hospital.value,
+    specialty: specialty.value,
+    date: date.value,
+    time: time.value
+  };
+
+  if (editIndex === null) {
+    appointments.push(appointment);
+  } else {
+    appointments[editIndex] = appointment;
+  }
+
+  localStorage.setItem("appointments", JSON.stringify(appointments));
+  closeModal();
+  renderTable();
+showSuccessMessage(
+  editIndex === null
+    ? "✅ Appointment booked successfully"
+    : "✏️ Appointment updated successfully"
+);
+}
+/* ===== EDIT ===== */
+function editAppointment(index) {
+  editIndex = index;
+  let a = appointments[index];
+
+  patient.value = a.patient;
+  doctor.value = a.doctor;
+  hospital.value = a.hospital;
+  specialty.value = a.specialty;
+  date.value = a.date;
+  time.value = a.time;
+
+  document.getElementById("modalTitle").innerText = "Edit Appointment";
+  document.getElementById("modal").style.display = "flex";
+}
+
+/* ===== DELETE ===== */
+function deleteAppointment(index) {
+  if (confirm("Delete this appointment?")) {
+    appointments.splice(index, 1);
+    localStorage.setItem("appointments", JSON.stringify(appointments));
+    renderTable();
+  }
+}
+
+/* ===== UTIL ===== */
+function clearForm() {
+  patient.value = doctor.value = hospital.value =
+  specialty.value = date.value = time.value = "";
+}
+
+renderTable();
+</script>
+
+</body>
+</html>
